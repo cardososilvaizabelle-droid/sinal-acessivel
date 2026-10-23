@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sinal Acessível</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">♿ Sinal Acessível</div>
+    <p>Tecnologia para atravessar com mais segurança.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h1>Cadastro de usuário</h1>
+      <form id="register-form">
+        <label>Nome
+          <input id="name" required minlength="2" maxlength="120">
+        </label>
+        <label>E-mail
+          <input id="email" type="email" required>
+        </label>
+        <label>Senha (mínimo 12 caracteres)
+          <input id="password" type="password" required minlength="12">
+        </label>
+        <label>Necessidade de acessibilidade
+          <select id="need" required>
+            <option value="">Selecione</option>
+            <option value="mobilidade_reduzida">Mobilidade reduzida</option>
+            <option value="cadeira_de_rodas">Uso de cadeira de rodas</option>
+            <option value="deficiencia_visual">Deficiência visual</option>
+            <option value="outra_necessidade">Outra necessidade</option>
+          </select>
+        </label>
+        <button type="submit">Cadastrar</button>
+      </form>
+      <p id="register-result" role="status"></p>
+    </section>
+
+    <section class="panel">
+      <h2>Semáforo virtual</h2>
+      <p>Esta simulação não controla semáforos reais.</p>
+      <div id="light" class="light" aria-label="Semáforo virtual">
+        <span class="red active"></span>
+        <span class="yellow"></span>
+        <span class="green"></span>
+      </div>
+      <p id="light-status" role="status">Aguardando cadastro.</p>
+      <label>Cruzamento
+        <select id="intersection"></select>
+      </label>
+      <button id="simulate" disabled>Simular tempo extra</button>
+      <div id="simulation-result" role="status"></div>
+    </section>
+  </main>
+
+  <footer>
+    Sinal Acessível · Protótipo de mobilidade urbana inclusiva
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
