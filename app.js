@@ -10,21 +10,36 @@ async function request(path, options = {}) {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...options.headers
+      ...(options.headers || {})
     }
   });
 
-  const data = await response.json();
+  let data = null;
+  const contentType = response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    data = await response.text();
+  }
 
   if (!response.ok) {
-    throw new Error(data.detail || "Não foi possível concluir a operação.");
+    const message =
+      typeof data === "object" && data && data.detail
+        ? data.detail
+        : "Não foi possível concluir a operação.";
+    throw new Error(message);
   }
+
   return data;
 }
 
 $("register-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   $("register-result").textContent = "Cadastrando...";
+
+  const selectedNeed = $("need").value;
+  const accessibilityNeeds = selectedNeed ? [selectedNeed] : [];
 
   try {
     const user = await request("/api/register", {
@@ -33,13 +48,12 @@ $("register-form").addEventListener("submit", async (event) => {
         name: $("name").value.trim(),
         email: $("email").value.trim(),
         password: $("password").value,
-        accessibility_needs: [$("need").value]
+        accessibility_needs: accessibilityNeeds
       })
     });
 
     userId = user.id;
-    $("register-result").textContent =
-      `Cadastro criado para ${user.name}.`;
+    $("register-result").textContent = `Cadastro criado para ${user.name}.`;
     $("simulate").disabled = false;
     $("password").value = "";
   } catch (error) {
@@ -61,8 +75,7 @@ async function loadIntersections() {
       select.appendChild(option);
     }
   } catch (error) {
-    $("light-status").textContent =
-      "Não foi possível conectar à API: " + error.message;
+    $("light-status").textContent = "Não foi possível conectar à API: " + error.message;
   }
 }
 
@@ -81,14 +94,17 @@ $("simulate").addEventListener("click", async () => {
       })
     });
 
+    const activeStates = {
+      red: false,
+      yellow: false,
+      green: true
+    };
+
     for (const color of ["red", "yellow", "green"]) {
-      document.querySelector(".light ." + color)
-        .classList.toggle("active", color === "green");
+      document.querySelector(".light ." + color).classList.toggle("active", activeStates[color]);
     }
 
-    $("light-status").textContent =
-      "VERDE SIMULADO — travessia ampliada";
-
+    $("light-status").textContent = "VERDE SIMULADO — travessia ampliada";
     $("simulation-result").textContent =
       `Tempo normal: ${result.normal_seconds}s. ` +
       `Tempo adicional: ${result.extra_seconds}s. ` +
